@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar";
@@ -34,8 +36,7 @@ function App() {
 
       // Try API in background. If it succeeds, replace the static data.
       try {
-        const apiRes = await fetch('https://vetconnect-1.onrender.com/vets');
-
+        const apiRes = await fetch('http://localhost:3001/vets');
         if (apiRes.ok) {
           const apiData = await apiRes.json();
           setVets(apiData);
@@ -53,12 +54,11 @@ function App() {
 
   const addVet = async (newVet) => {
     try {
-      const res = await fetch("https://vetconnect-1.onrender.com/vets", {
+      const res = await fetch("http://localhost:3001/vets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newVet),
       });
-
       if (!res.ok) throw new Error('Failed to add vet');
       const data = await res.json();
       setVets(prev => [...prev, data]);
@@ -84,7 +84,7 @@ function App() {
           <Route path="/vets" element={<VetsList vets={vets} setVets={setVets} />} />
 
 
-          <Route path="/vets/:id" element={<VetDetails vets={vets} />} />
+          <Route path="/vets/:id" element={<VetDetails />} />
 
           <Route path="/book" element={<BookAppointment />} />
 

@@ -17,7 +17,7 @@ function AddVetForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch("http://localhost:8000/vets", {
+    fetch("http://localhost:3001/vets", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),

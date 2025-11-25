@@ -13,14 +13,27 @@ import { Modal, Button, Form } from "react-bootstrap";
 
 function VetsList({ vets }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchField, setSearchField] = useState("name");
   const [showModal, setShowModal] = useState(false);
   const [selectedVet, setSelectedVet] = useState(null);
   const [selectedDate, setSelectedDate] = useState("");
   const [likedVets, setLikedVets] = useState({});
 
-  const filteredVets = (vets || []).filter((vet) =>
-    vet?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredVets = (vets || []).filter((vet) => {
+    const searchValue = searchTerm.toLowerCase();
+    switch (searchField) {
+      case "name":
+        return vet?.name?.toLowerCase().includes(searchValue);
+      case "location":
+        return vet?.location?.toLowerCase().includes(searchValue);
+      case "specialty":
+        return vet?.specialty?.toLowerCase().includes(searchValue);
+      case "contact":
+        return vet?.contact?.toLowerCase().includes(searchValue);
+      default:
+        return true;
+    }
+  });
 
   const handleShow = (vet) => {
     setSelectedVet(vet);
@@ -68,13 +81,30 @@ function VetsList({ vets }) {
         <h2 className="fw-bold" style={{ color: "#28a745" }}>
           Meet Our Veterinarians
         </h2>
-        <input
-          type="text"
-          placeholder="Search vets by name..."
-          className="form-control w-50 mx-auto mt-3 shadow-sm"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <div className="d-flex gap-2 justify-content-center mt-3 flex-wrap">
+          <select
+            className="form-select shadow-sm"
+            style={{ maxWidth: "200px" }}
+            value={searchField}
+            onChange={(e) => {
+              setSearchField(e.target.value);
+              setSearchTerm("");
+            }}
+          >
+            <option value="name">Search by Name</option>
+            <option value="location">Search by Location</option>
+            <option value="specialty">Search by Specialty</option>
+            <option value="contact">Search by Contact</option>
+          </select>
+          <input
+            type="text"
+            placeholder={`Search by ${searchField}...`}
+            className="form-control shadow-sm"
+            style={{ maxWidth: "400px" }}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
       </div>
 
       <div className="row">
@@ -126,8 +156,8 @@ function VetsList({ vets }) {
                     >
                       <i
                         className={`bi ${likedVets[vet.id]
-                            ? "bi-heart-fill text-danger"
-                            : "bi-heart text-secondary"
+                          ? "bi-heart-fill text-danger"
+                          : "bi-heart text-secondary"
                           }`}
                       ></i>
                     </button>

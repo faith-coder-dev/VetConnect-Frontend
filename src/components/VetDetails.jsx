@@ -12,30 +12,18 @@ function VetDetails() {
       setLoading(true);
       setError(null);
       try {
-        // First try the API (use port 3001 where json-server runs in this project)
-        const res = await fetch(`http://localhost:3001/vets/${id}`);
-        if (!res.ok) {
-          throw new Error('Veterinarian not found');
-        }
-        const data = await res.json();
-        setVet(data);
+        // Fetch from db.json (static data) for instant loading
+        const staticRes = await fetch('/db.json');
+        if (!staticRes.ok) throw new Error('Data not found');
+        const data = await staticRes.json();
+        const foundVet = data.vets?.find(v => v.id.toString() === id);
+        if (!foundVet) throw new Error('Veterinarian not found');
+        setVet(foundVet);
         setLoading(false);
-      } catch (apiErr) {
-        console.error("Error fetching from API:", apiErr);
-        // If API fails, try fetching from static data
-        try {
-          const staticRes = await fetch('/vets.json');
-          if (!staticRes.ok) throw new Error('Backup data not found');
-          const allVets = await staticRes.json();
-          const foundVet = allVets.vets?.find(v => v.id === id);
-          if (!foundVet) throw new Error('Veterinarian not found in backup data');
-          setVet(foundVet);
-          setLoading(false);
-        } catch (staticErr) {
-          console.error("Error fetching from static:", staticErr);
-          setError("Unable to load veterinarian details. Please try again later.");
-          setLoading(false);
-        }
+      } catch (err) {
+        console.error("Error fetching vet details:", err);
+        setError("Unable to load veterinarian details. Please try again later.");
+        setLoading(false);
       }
     };
 
