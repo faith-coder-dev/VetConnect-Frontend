@@ -45,10 +45,37 @@ function VetsList({ vets }) {
     setSelectedDate("");
   };
 
-  const handleBook = (e) => {
+  const handleBook = async (e) => {
     e.preventDefault();
-    alert(`Appointment booked with ${selectedVet.name} on ${selectedDate}`);
-    handleClose();
+    try {
+      // Create appointment object (json-server will auto-generate ID)
+      const appointment = {
+        vetName: selectedVet.name,
+        petName: "",
+        ownerName: "",
+        date: selectedDate,
+        time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+      };
+
+      // POST to json-server which will auto-save to db.json
+      const res = await fetch('http://localhost:3001/appointments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(appointment)
+      });
+
+      if (res.ok) {
+        alert(`Appointment booked with ${selectedVet.name} on ${selectedDate}!`);
+        handleClose();
+      } else {
+        alert('Error booking appointment. Please try again.');
+        handleClose();
+      }
+    } catch (err) {
+      console.error('Error booking appointment:', err);
+      alert('Error: Make sure json-server is running on port 3001');
+      handleClose();
+    }
   };
 
   const handleLike = (id) => {
@@ -81,29 +108,30 @@ function VetsList({ vets }) {
         <h2 className="fw-bold" style={{ color: "#28a745" }}>
           Meet Our Veterinarians
         </h2>
-        <div className="d-flex gap-2 justify-content-center mt-3 flex-wrap">
-          <select
-            className="form-select shadow-sm"
-            style={{ maxWidth: "200px" }}
-            value={searchField}
-            onChange={(e) => {
-              setSearchField(e.target.value);
-              setSearchTerm("");
-            }}
-          >
-            <option value="name">Search by Name</option>
-            <option value="location">Search by Location</option>
-            <option value="specialty">Search by Specialty</option>
-            <option value="contact">Search by Contact</option>
-          </select>
-          <input
-            type="text"
-            placeholder={`Search by ${searchField}...`}
-            className="form-control shadow-sm"
-            style={{ maxWidth: "400px" }}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div className="mt-3" style={{ maxWidth: "500px", margin: "0 auto" }}>
+          <div className="input-group shadow-sm">
+            <select
+              className="form-select"
+              style={{ maxWidth: "150px" }}
+              value={searchField}
+              onChange={(e) => {
+                setSearchField(e.target.value);
+                setSearchTerm("");
+              }}
+            >
+              <option value="name">Name</option>
+              <option value="location">Location</option>
+              <option value="specialty">Specialty</option>
+              <option value="contact">Contact</option>
+            </select>
+            <input
+              type="text"
+              className="form-control"
+              placeholder={`Filter by ${searchField}...`}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 

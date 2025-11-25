@@ -27,38 +27,37 @@ function BookAppointment() {
     setErrorMsg("");
 
     try {
-      // Send to local API. If the API isn't available, we'll gracefully fall back to localStorage
-      // so the user sees a successful booking and we don't lose their data.
+      // json-server will auto-generate ID
+      const appointment = {
+        vetName: formData.vetName,
+        petName: formData.petName,
+        ownerName: formData.ownerName,
+        date: formData.date,
+        time: formData.time
+      };
+
+      // POST to json-server which will auto-save to db.json
       const res = await fetch("http://localhost:3001/appointments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(appointment),
       });
 
-      if (!res.ok) throw new Error("Failed to save appointment");
-
-      setSuccessMsg(" Appointment booked successfully!");
-      setFormData({
-        vetName: preselectedVet,
-        petName: "",
-        ownerName: "",
-        date: "",
-        time: "",
-      });
+      if (res.ok) {
+        setSuccessMsg("✓ Appointment booked successfully!");
+        setFormData({
+          vetName: preselectedVet,
+          petName: "",
+          ownerName: "",
+          date: "",
+          time: "",
+        });
+      } else {
+        setErrorMsg("Failed to book appointment. Please try again.");
+      }
     } catch (err) {
       console.error(err);
-      // If posting to server fails (server down or offline), store locally so user doesn't lose the booking.
-      try {
-        const queued = JSON.parse(localStorage.getItem('queuedAppointments') || '[]');
-        const newItem = { ...formData, createdAt: new Date().toISOString() };
-        queued.push(newItem);
-        localStorage.setItem('queuedAppointments', JSON.stringify(queued));
-        setSuccessMsg('Appointment saved locally (will sync when server is available)');
-        setFormData({ vetName: preselectedVet, petName: '', ownerName: '', date: '', time: '' });
-      } catch (lsErr) {
-        console.error('Failed to save appointment locally', lsErr);
-        setErrorMsg(" Failed to book appointment. Please try again.");
-      }
+      setErrorMsg("Error: Make sure json-server is running on port 3001");
     }
   };
 

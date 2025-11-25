@@ -18,37 +18,20 @@ function App() {
   const [vets, setVets] = useState([]);
 
   useEffect(() => {
-    // STATIC-FIRST strategy:
-    // 1) Load a local static file (`public/vets.json`) immediately so the UI appears fast
-    // 2) Then try to fetch the authoritative list from the API and replace the data if successful
-    // This reduces perceived lag while still allowing fresh server data to overwrite the static list.
-    const loadStaticThenApi = async () => {
+    // Load vets from db.json
+    const loadVets = async () => {
       try {
-        const staticRes = await fetch('/vets.json');
-        if (staticRes.ok) {
-          const staticData = await staticRes.json();
-          setVets(staticData.vets || []);
+        const res = await fetch('/db.json');
+        if (res.ok) {
+          const data = await res.json();
+          setVets(data.vets || []);
         }
       } catch (err) {
-        // ignore static load errors — we'll still try the API next
-        console.warn('Could not load static vets.json:', err);
-      }
-
-      // Try API in background. If it succeeds, replace the static data.
-      try {
-        const apiRes = await fetch('http://localhost:3001/vets');
-        if (apiRes.ok) {
-          const apiData = await apiRes.json();
-          setVets(apiData);
-        } else {
-          console.warn('API returned non-OK status for /vets', apiRes.status);
-        }
-      } catch (apiErr) {
-        console.warn('Could not fetch vets from API, continuing with static data:', apiErr);
+        console.error('Error loading vets:', err);
       }
     };
 
-    loadStaticThenApi();
+    loadVets();
   }, []);
 
 
