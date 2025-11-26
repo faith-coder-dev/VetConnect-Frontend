@@ -10,7 +10,7 @@ const DB_PATH = path.join(__dirname, 'db.json');
 app.use(cors());
 app.use(express.json());
 
-// Helper to read db.json
+
 function readDB() {
   try {
     const data = fs.readFileSync(DB_PATH, 'utf-8');
@@ -21,7 +21,6 @@ function readDB() {
   }
 }
 
-// Helper to write db.json
 function writeDB(data) {
   try {
     fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
@@ -31,19 +30,19 @@ function writeDB(data) {
   }
 }
 
-// GET /vets
+
 app.get('/vets', (req, res) => {
-  const db = readDB();
+  const db = readDB()
   res.json(db.vets || []);
 });
 
-// GET /appointments
+
 app.get('/appointments', (req, res) => {
   const db = readDB();
   res.json(db.appointments || []);
 });
 
-// POST /appointments - Add new appointment
+
 app.post('/appointments', (req, res) => {
   try {
     const db = readDB();
@@ -65,7 +64,7 @@ app.post('/appointments', (req, res) => {
   }
 });
 
-// POST /vets - Add new vet
+
 app.post('/vets', (req, res) => {
   try {
     const db = readDB();

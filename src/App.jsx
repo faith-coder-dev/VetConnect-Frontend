@@ -18,7 +18,7 @@ function App() {
   const [vets, setVets] = useState([]);
 
   useEffect(() => {
-    // Load vets from db.json
+    
     const loadVets = async () => {
       try {
         const res = await fetch('/db.json');
@@ -48,7 +48,7 @@ function App() {
       return { success: true, data };
     } catch (err) {
       console.error("Error adding vet:", err);
-      // Still add to state even if API fails
+      
       const tempVet = { ...newVet, id: Date.now().toString() };
       setVets(prev => [...prev, tempVet]);
       return { success: false, data: tempVet, error: err.message };

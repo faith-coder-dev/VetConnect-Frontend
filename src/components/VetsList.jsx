@@ -57,7 +57,7 @@ function VetsList({ vets }) {
         time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
       };
 
-      // POST to json-server which will auto-save to db.json
+      
       const res = await fetch('http://localhost:3001/appointments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

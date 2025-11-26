@@ -12,7 +12,7 @@ function VetDetails() {
       setLoading(true);
       setError(null);
       try {
-        // Fetch from db.json (static data) for instant loading
+        
         const staticRes = await fetch('/db.json');
         if (!staticRes.ok) throw new Error('Data not found');
         const data = await staticRes.json();
